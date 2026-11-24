@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кибербезопасность</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f4c81 0%, #1a7fb5 50%, #2ecc71 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  body::before {
+    width: 400px; height: 400px;
+    background: #2ecc71;
+    top: -150px; left: -150px;
+  }
+  body::after {
+    width: 500px; height: 500px;
+    background: #0f4c81;
+    bottom: -200px; right: -200px;
+  }
+  .shape {
+    position: fixed;
+    border: 3px solid rgba(255,255,255,0.25);
+    pointer-events: none;
+  }
+  .shape1 { width: 80px; height: 80px; top: 10%; right: 12%; transform: rotate(45deg); }
+  .shape2 { width: 60px; height: 60px; bottom: 15%; left: 8%; border-radius: 50%; }
+  .shape3 { width: 100px; height: 100px; top: 60%; left: 5%; transform: rotate(30deg); border-radius: 12px; }
+
+  .card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 40px 36px;
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h1 {
+    color: #0f4c81;
+    font-size: 32px;
+    margin-bottom: 18px;
+    line-height: 1.2;
+  }
+  h2 {
+    color: #0f4c81;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .subtitle {
+    color: #2ecc71;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 30px;
+  }
+  .topic {
+    background: #eaf6ff;
+    color: #0f4c81;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    border: 2px solid #1a7fb5;
+  }
+  .topic:nth-child(2) { background: #eafff2; border-color: #2ecc71; color: #1a7a45; }
+  .topic:nth-child(3) { background: #eef4ff; border-color: #0f4c81; }
+
+  button {
+    background: linear-gradient(135deg, #1a7fb5, #2ecc71);
+    color: #fff;
+    border: none;
+    padding: 16px 48px;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 8px 20px rgba(26,127,181,0.4);
+  }
+  button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(26,127,181,0.5); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  input[type="text"] {
+    width: 100%;
+    max-width: 360px;
+    padding: 16px 20px;
+    font-size: 22px;
+    text-align: center;
+    border: 3px solid #b8d8ec;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 2px;
+  }
+  input[type="text"]:focus { border-color: #1a7fb5; }
+
+  .hint {
+    color: #6b7f8f;
+    font-size: 15px;
+    margin: 12px 0 20px;
+  }
+  .feedback {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 14px;
+    min-height: 24px;
+  }
+  .ok { color: #1a7a45; }
+  .err { color: #d33a3a; }
+
+  .rules {
+    text-align: left;
+    max-width: 420px;
+    margin: 18px auto 10px;
+    background: #f4f9fd;
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 2px dashed #b8d8ec;
+  }
+  .rule {
+    font-size: 16px;
+    padding: 6px 0;
+    color: #7a8b99;
+    transition: color 0.2s;
+  }
+  .rule.met { color: #1a7a45; font-weight: 600; }
+  .rule::before { content: '○  '; font-weight: 700; }
+  .rule.met::before { content: '●  '; }.task-list { display: flex; flex-direction: column; gap: 14px; margin: 20px 0; }
+  .task-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    background: #f4f9fd;
+    border-radius: 14px;
+    padding: 14px 16px;
+    border: 2px solid #dfeefa;
+    text-align: left;
+  }
+  .task-text { font-size: 15px; color: #24435c; line-height: 1.35; }
+  .choice-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: 2px solid #b8d8ec;
+    background: #fff;
+    color: #0f4c81;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .choice-btn:hover { background: #eaf6ff; }
+  .choice-btn.correct {
+    background: #2ecc71;
+    border-color: #2ecc71;
+    color: #fff;
+    cursor: default;
+  }
+  .choice-btn.wrong {
+    background: #ffd6d6;
+    border-color: #d33a3a;
+    color: #d33a3a;
+    animation: shake 0.3s;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .progress {
+    font-size: 15px;
+    color: #6b7f8f;
+    margin-top: 8px;
+  }
+  .hidden { display: none; }
+  .big-emoji { font-size: 60px; margin-bottom: 10px; }
+  .final-word { font-size: 26px; font-weight: 700; color: #1a7a45; margin-top: 16px; }
+
+  @media (max-width: 520px) {
+    .card { padding: 28px 20px; }
+    h1 { font-size: 25px; }
+    .task-row { grid-template-columns: 1fr; }
+    .choice-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="shape shape1"></div>
+<div class="shape shape2"></div>
+<div class="shape shape3"></div>
+
+<div class="card" id="app">
+
+  <!-- СТАРТ -->
+  <div id="screen-start">
+    <div class="big-emoji">🔐</div>
+    <h1>Кибербезопасность</h1>
+    <div class="topics">
+      <div class="topic">🔑 Надёжные пароли</div>
+      <div class="topic">🎣 Фишинг</div>
+      <div class="topic">🛡️ Защита личных данных</div>
+    </div>
+    <button onclick="showScreen('screen-key1')">Начать ▶</button>
+  </div>
+
+  <!-- КЛЮЧ 1: ащ -->
+  <div id="screen-key1" class="hidden">
+    <div class="big-emoji">🔑</div>
+    <h2>Введите пароль</h2>
+    <input type="text" id="input-key1" maxlength="2" autocomplete="off">
+    <div class="feedback" id="fb-key1"></div>
+    <button onclick="checkKey('key1', 'ащ', 'screen-password')">Проверить</button>
+  </div>
+
+  <!-- ПАРОЛЬ -->
+  <div id="screen-password" class="hidden">
+    <div class="big-emoji">🛡️</div>
+    <h2>Придумай надёжный пароль</h2>
+    <p class="hint">Пароль должен быть от 7 до 12 символов и содержать все элементы ниже</p>
+    <input type="text" id="input-password" maxlength="20" autocomplete="off" placeholder="Введите пароль">
+    <div class="rules">
+      <div class="rule" id="r-length">Длина от 7 до 12 символов</div>
+      <div class="rule" id="r-upper">Есть заглавная буква (А–Я, A–Z)</div>
+      <div class="rule" id="r-lower">Есть строчная буква (а–я, a–z)</div>
+      <div class="rule" id="r-digit">Есть цифра (0–9)</div>
+      <div class="rule" id="r-symbol">Есть символ (!@#$%^&* и т.п.)</div>
+    </div>
+    <div class="feedback" id="fb-password"></div>
+    <button id="btn-next-password" onclick="showScreen('screen-key2')" disabled>Далее ▶</button>
+  </div>
+
+  <!-- КЛЮЧ 2: зи -->
+  <div id="screen-key2" class="hidden">
+    <div class="big-emoji">🔑</div>
+    <h2>Введите пароль</h2>
+    <input type="text" id="input-key2" maxlength="2" autocomplete="off">
+    <div class="feedback" id="fb-key2"></div>
+    <button onclick="checkKey('key2', 'зи', 'screen-phishing')">Проверить</button>
+  </div>
+
+  <!-- ФИШИНГ -->
+  <div id="screen-phishing" class="hidden">
+    <div class="big-emoji">🎣</div>
+    <h2>Фишинг или безопасно?</h2>
+    <p class="hint">Выбери правильный вариант для каждого сообщения</p>
+    <div class="task-list" id="phishing-list"></div>
+    <div class="feedback" id="fb-phishing"></div><button id="btn-next-phishing" onclick="showScreen('screen-key3')" disabled>Далее ▶</button>
+  </div>
+
+  <!-- КЛЮЧ 3: ат -->
+  <div id="screen-key3" class="hidden">
+    <div class="big-emoji">🔑</div>
+    <h2>Введите пароль</h2>
+    <input type="text" id="input-key3" maxlength="2" autocomplete="off">
+    <div class="feedback" id="fb-key3"></div>
+    <button onclick="checkKey('key3', 'ат', 'screen-privacy')">Проверить</button>
+  </div>
+
+  <!-- СВЕТОФОР ПРИВАТНОСТИ -->
+  <div id="screen-privacy" class="hidden">
+    <div class="big-emoji">🚦</div>
+    <h2>Светофор приватности</h2>
+    <p class="hint">Выбери цвет для каждой ситуации</p>
+    <div class="task-list" id="privacy-list"></div>
+    <div class="feedback" id="fb-privacy"></div>
+    <button id="btn-next-privacy" onclick="showScreen('screen-final')" disabled>Далее ▶</button>
+  </div>
+
+  <!-- ФИНАЛ -->
+  <div id="screen-final" class="hidden">
+    <div class="big-emoji">🏁</div>
+    <h2>Собери слово</h2>
+    <p class="hint">Вспомни все ключи и напиши полное слово из тех букв, которые ты вводил(а)</p>
+    <input type="text" id="input-final" maxlength="10" autocomplete="off" placeholder="Введите слово">
+    <div class="feedback" id="fb-final"></div>
+    <button onclick="checkFinal()">Проверить</button>
+  </div>
+
+  <!-- ПОБЕДА -->
+  <div id="screen-win" class="hidden">
+    <div class="big-emoji">🎉</div>
+    <h1>Поздравляем!</h1>
+    <p class="subtitle">Ты прошёл(ла) тест по кибербезопасности!</p>
+    <p class="final-word">🛡️ ЗАЩИТА</p>
+    <p class="hint" style="margin-top:20px;">Теперь ты знаешь: сложные пароли, красные флажки фишинга и защита личных данных — твои главные помощники в сети!</p>
+    <button onclick="location.reload()">Пройти ещё раз 🔄</button>
+  </div>
+
+</div>
+
+<script>
+/* ---------- навигация ---------- */
+function showScreen(id) {
+  document.querySelectorAll('.card > div').forEach(d => d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  const firstInput = document.getElementById(id).querySelector('input');
+  if (firstInput) firstInput.focus();
+}
+
+/* ---------- ключи ---------- */
+function checkKey(keyId, answer, nextScreen) {
+  const input = document.getElementById('input-' + keyId);
+  const fb = document.getElementById('fb-' + keyId);
+  const val = input.value.trim().toLowerCase();
+  if (val === answer) {
+    fb.textContent = '✅ Верно! Идём дальше.';
+    fb.className = 'feedback ok';
+    setTimeout(() => showScreen(nextScreen), 600);
+  } else {
+    fb.textContent = '❌ Неверно. Попробуй ещё раз.';
+    fb.className = 'feedback err';
+    input.value = '';
+    input.focus();
+  }
+}
+
+/* ---------- пароль ---------- */
+const pwdInput = document.getElementById('input-password');
+pwdInput.addEventListener('input', validatePassword);
+
+function validatePassword() {
+  const v = pwdInput.value;
+  const checks = {
+    length: v.length >= 7 && v.length <= 12,
+    upper: /[А-ЯЁA-Z]/.test(v),
+    lower: /[а-яёa-z]/.test(v),
+    digit: /[0-9]/.test(v),
+    symbol: /[^А-ЯЁа-яёA-Za-z0-9]/.test(v)
+  };
+  const map = {
+    length: 'r-length', upper: 'r-upper', lower: 'r-lower',
+    digit: 'r-digit', symbol: 'r-symbol'
+  };
+  let allMet = true;
+  for (const k in checks) {
+    const el = document.getElementById(map[k]);
+    el.classList.toggle('met', checks[k]);
+    if (!checks[k]) allMet = false;
+  }
+  const btn = document.getElementById('btn-next-password');
+  const fb = document.getElementById('fb-password');
+  btn.disabled = !allMet;
+  if (allMet) {
+    fb.textContent = '✅ Отличный надёжный пароль!';
+    fb.className = 'feedback ok';
+  } else if (v.length > 0) {
+    fb.textContent = 'Выполни все правила, чтобы продолжить';
+    fb.className = 'feedback err';
+  } else {
+    fb.textContent = '';
+    fb.className = 'feedback';
+  }
+}
+
+/* ---------- фишинг ---------- */
+const phishingData = [
+  { text: '«Поздравляем! Ты выиграл iPhone 15! Перейди по ссылке и введи пароль от аккаунта, чтобы получить приз»', correct: 'фишинг' },{ text: 'Сообщение от друга: «Привет! Проголосуй за мою работу в конкурсе, вот ссылка: gооgle-vote.ru»', correct: 'фишинг' },
+  { text: '«Ваш аккаунт в игре будет заблокирован через 2 часа. Срочно подтвердите пароль по ссылке»', correct: 'фишинг' },
+  { text: 'Письмо от сервиса: «Вы вошли в аккаунт с нового устройства. Если это были не вы — смените пароль в настройках»', correct: 'безопасно' },
+  { text: '«Мама, это я, у меня разрядился телефон, срочно переведи 5000 на этот номер»', correct: 'фишинг' },
+  { text: 'Учитель в школьном чате: «Завтра контрольная, повторите параграф 12»', correct: 'безопасно' }
+];
+
+let phishingSolved = 0;
+function buildPhishing() {
+  const list = document.getElementById('phishing-list');
+  list.innerHTML = '';
+  phishingSolved = 0;
+  phishingData.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    row.innerHTML = `
+      <div class="task-text">${i + 1}. ${item.text}</div>
+      <button class="choice-btn" data-choice="безопасно">Безопасно</button>
+      <button class="choice-btn" data-choice="фишинг">Фишинг</button>
+    `;
+    row.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+        if (choice === item.correct) {
+          if (!row.dataset.solved) {
+            row.dataset.solved = '1';
+            phishingSolved++;
+            row.querySelectorAll('.choice-btn').forEach(b => {
+              if (b.dataset.choice === item.correct) b.classList.add('correct');
+              b.disabled = true;
+            });
+            updatePhishingProgress();
+          }
+        } else {
+          btn.classList.add('wrong');
+          setTimeout(() => btn.classList.remove('wrong'), 500);
+        }
+      });
+    });
+    list.appendChild(row);
+  });
+  updatePhishingProgress();
+}
+function updatePhishingProgress() {
+  const fb = document.getElementById('fb-phishing');
+  fb.textContent = `Правильно отмечено: ${phishingSolved} из ${phishingData.length}`;
+  fb.className = 'feedback ok';
+  document.getElementById('btn-next-phishing').disabled = phishingSolved < phishingData.length;
+}
+
+/* ---------- светофор приватности ---------- */
+const privacyData = [
+  { text: 'Выложить фото, где виден номер школы', correct: 'нельзя' },
+  { text: 'Написать в профиле «учусь в 5 „А“ школе №15»', correct: 'нельзя' },
+  { text: 'Отправить фото любимой собаки другу в личку', correct: 'можно' },
+  { text: 'Незнакомец в игре просит номер телефона «для подарка»', correct: 'нельзя' },
+  { text: 'Поставить геолокацию на фото из дома', correct: 'нельзя' },
+  { text: 'Спросить у родителей, можно ли опубликовать видео с младшим братом', correct: 'осторожно' }
+];
+
+let privacySolved = 0;
+function buildPrivacy() {
+  const list = document.getElementById('privacy-list');
+  list.innerHTML = '';
+  privacySolved = 0;
+  privacyData.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    row.style.gridTemplateColumns = '1fr auto auto auto';
+    row.innerHTML = `
+      <div class="task-text">${i + 1}. ${item.text}</div>
+      <button class="choice-btn" data-choice="можно">🟢 Можно</button>
+      <button class="choice-btn" data-choice="осторожно">🟡 Осторожно</button>
+      <button class="choice-btn" data-choice="нельзя">🔴 Нельзя</button>
+    `;
+    row.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+        if (choice === item.correct) {
+          if (!row.dataset.solved) {
+            row.dataset.solved = '1';
+            privacySolved++;
+            row.querySelectorAll('.choice-btn').forEach(b => {
+              if (b.dataset.choice === item.correct) b.classList.add('correct');
+              b.disabled = true;
+            });
+            updatePrivacyProgress();
+          }
+        } else {
+          btn.classList.add('wrong');setTimeout(() => btn.classList.remove('wrong'), 500);
+        }
+      });
+    });
+    list.appendChild(row);
+  });
+  updatePrivacyProgress();
+}
+function updatePrivacyProgress() {
+  const fb = document.getElementById('fb-privacy');
+  fb.textContent = `Правильно отмечено: ${privacySolved} из ${privacyData.length}`;
+  fb.className = 'feedback ok';
+  document.getElementById('btn-next-privacy').disabled = privacySolved < privacyData.length;
+}
+
+/* ---------- финал ---------- */
+function checkFinal() {
+  const val = document.getElementById('input-final').value.trim().toLowerCase();
+  const fb = document.getElementById('fb-final');
+  if (val === 'защита') {
+    fb.textContent = '✅ Верно!';
+    fb.className = 'feedback ok';
+    setTimeout(() => showScreen('screen-win'), 700);
+  } else {
+    fb.textContent = '❌ Подумай ещё: вспомни все три ключа.';
+    fb.className = 'feedback err';
+    document.getElementById('input-final').value = '';
+    document.getElementById('input-final').focus();
+  }
+}
+
+/* Enter для полей ввода */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const active = document.activeElement;
+    if (active && active.tagName === 'INPUT') {
+      const screen = active.closest('.card > div').id;
+      if (screen === 'screen-key1') checkKey('key1', 'ащ', 'screen-password');
+      else if (screen === 'screen-key2') checkKey('key2', 'зи', 'screen-phishing');
+      else if (screen === 'screen-key3') checkKey('key3', 'ат', 'screen-privacy');
+      else if (screen === 'screen-final') checkFinal();
+    }
+  }
+});
+
+/* инициализация */
+buildPhishing();
+buildPrivacy();
+</script>
+</body>
+</html>
